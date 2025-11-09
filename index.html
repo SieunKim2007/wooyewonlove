@@ -15,7 +15,7 @@
     --line:#ffd1ea; --accent:#ff6bb8; --accent2:#ff8fc8; --card:#fff;
     --shadow: 0 18px 40px rgba(255,105,180,.28);
   }
-  html,body{height:100%;margin:0}
+  html,body{height:100%;margin:0;padding:0}
   body{
     background:
       radial-gradient(1200px 700px at 75% -10%, #ffd6e7, transparent),
@@ -23,78 +23,174 @@
     font-family: 'Dongle', 'Jua', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo","Noto Sans KR", sans-serif;
     color:var(--ink); display:grid; place-items:center;
   }
+
+  /* 📱 반응형 프레임 */
   .frame{
-    width:min(96vw,980px); aspect-ratio:16/9; background:#fff;
-    border:6px solid #ffb3d9; border-radius:24px; overflow:hidden;
-    box-shadow: var(--shadow); position:relative;
+    width:100vw;
+    height:100svh;
+    max-width:980px;
+    margin:0 auto;
+    background:#fff;
+    border:6px solid #ffb3d9;
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    position:relative;
   }
+
   .top{
-    position:absolute; inset:0 0 auto 0; padding:10px; display:flex; gap:8px; align-items:center;
+    position:absolute; inset:0 0 auto 0; padding:10px;
+    display:flex; gap:8px; align-items:center;
     background:linear-gradient(180deg,#fff8,#fff0);
   }
   .pill{
-    background:linear-gradient(#fff,#fff7fb); border:2px solid var(--line); border-radius:14px;
-    padding:6px 12px; display:flex; align-items:center; gap:8px; font-weight:700; color:var(--ink);
+    background:linear-gradient(#fff,#fff7fb);
+    border:2px solid var(--line);
+    border-radius:14px;
+    padding:6px 12px;
+    display:flex; align-items:center; gap:8px;
+    font-weight:700; color:var(--ink);
     box-shadow:0 8px 18px rgba(255,105,180,.22);
   }
+
   .board{
-    position:absolute; inset:56px 16px 140px 16px; display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+    position:absolute; inset:56px 12px 140px 12px;
+    display:grid; grid-template-columns:1fr 1fr; gap:12px;
   }
+
   .stage{
-    border:2px solid var(--line); border-radius:16px; background:linear-gradient(#fff,#fff7fb);
-    padding:14px; box-shadow:0 10px 28px rgba(255,105,180,.18); position:relative; overflow:hidden;
+    border:2px solid var(--line);
+    border-radius:16px;
+    background:linear-gradient(#fff,#fff7fb);
+    padding:14px;
+    box-shadow:0 10px 28px rgba(255,105,180,.18);
+    position:relative; overflow:hidden;
   }
-  .avatarWrap{ display:grid; place-items:center; background:
+
+  .avatarWrap{
+    display:grid; place-items:center;
+    background:
       radial-gradient(900px 500px at 15% -15%, #ffe9f3, transparent),
       radial-gradient(900px 500px at 90% 10%, #ffe2f0, transparent),
-      #fff; border-radius:14px; height:100%;
+      #fff;
+    border-radius:14px; height:100%;
   }
   .avatarWrap img{
-    width:min(80%,360px); max-height:100%; object-fit:contain; filter: drop-shadow(0 16px 28px rgba(255,105,180,.28));
+    width:min(80%,360px); max-height:100%; object-fit:contain;
+    filter: drop-shadow(0 16px 28px rgba(255,105,180,.28));
     border-radius:16px;
   }
+
   .bubble{
-    position:absolute; left:20px; right:20px; bottom:160px; display:none;
-    background:#fff; border:2px solid var(--line); border-radius:18px;
-    padding:12px 14px; box-shadow:0 10px 28px rgba(255,105,180,.22);
-    font-size:28px; line-height:1.45; color:var(--muted);
+    position:absolute; left:16px; right:16px;
+    bottom:28%; display:none;
+    background:#fff; border:2px solid var(--line);
+    border-radius:18px; padding:10px 12px;
+    box-shadow:0 10px 28px rgba(255,105,180,.22);
+    font-size:clamp(16px,3.8vw,22px);
+    line-height:1.5; color:var(--muted);
   }
 
   .textbox{
     position:absolute; left:0; right:0; bottom:0; padding:16px;
   }
   .card{
-    background:linear-gradient(#fff,#fff7fb); border:2px solid var(--line); border-radius:18px;
-    padding:16px 18px; max-width: 96%; margin:0 auto 8px; box-shadow:0 14px 34px rgba(255,105,180,.22);
+    background:linear-gradient(#fff,#fff7fb);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:16px 18px;
+    max-width:96%;
+    margin:0 auto 8px;
+    box-shadow:0 14px 34px rgba(255,105,180,.22);
   }
-  .who{ font-family:'Jua', sans-serif; font-size:30px; color:var(--accent); margin-bottom:4px; letter-spacing: .5px; }
-  .txt{ font-size:30px; line-height:1.5; color:var(--muted); min-height:80px }
+
+  .who{
+    font-family:'Jua', sans-serif;
+    font-size:clamp(18px,5vw,26px);
+    color:var(--accent);
+    margin-bottom:4px;
+    letter-spacing:.5px;
+  }
+  .txt{
+    font-size:clamp(16px,4.5vw,24px);
+    line-height:1.55;
+    color:var(--muted);
+    min-height:64px;
+  }
 
   .controls{
-    position:absolute; left:0; right:0; bottom:8px; display:flex; justify-content:center; gap:8px;
+    position:absolute; left:0; right:0; bottom:8px;
+    display:flex; justify-content:center; gap:8px;
   }
   button{
-    border:none; cursor:pointer; border-radius:14px; padding:10px 16px;
-    background:linear-gradient(180deg,var(--accent2),var(--accent)); color:#fff; font-weight:900; font-size:24px;
+    border:none; cursor:pointer; border-radius:14px;
+    padding:10px 16px;
+    background:linear-gradient(180deg,var(--accent2),var(--accent));
+    color:#fff; font-weight:900;
+    font-size:clamp(16px,4.5vw,22px);
     box-shadow:0 10px 22px rgba(255,105,180,.3);
   }
-  .ghost{ background:linear-gradient(#fff,#fff7fb); color:var(--ink); border:2px solid var(--line) }
+  .ghost{
+    background:linear-gradient(#fff,#fff7fb);
+    color:var(--ink); border:2px solid var(--line);
+  }
 
-  /* 오버레이 */
   .overlay{ position:absolute; inset:0; display:grid; place-items:center; background:linear-gradient(#fff8,#fff0); z-index:10; }
   .sheet{
-    background:linear-gradient(#fff,#fff7fb); border:2px solid var(--line); border-radius:20px; padding:22px 26px; width:min(92%,700px);
-    text-align:center; box-shadow:0 16px 40px rgba(255,105,180,.28);
+    background:linear-gradient(#fff,#fff7fb);
+    border:2px solid var(--line);
+    border-radius:20px;
+    padding:22px 26px;
+    width:min(92%,700px);
+    text-align:center;
+    box-shadow:0 16px 40px rgba(255,105,180,.28);
   }
-  h1.title{ font-family:'Jua', sans-serif; font-size:64px; margin:8px 0 4px; color:#ff5cab; letter-spacing:.8px; text-shadow:0 4px 0 #fff, 0 10px 20px rgba(255,105,180,.3) }
+  h1.title{
+    font-family:'Jua', sans-serif;
+    font-size:64px;
+    margin:8px 0 4px;
+    color:#ff5cab;
+    letter-spacing:.8px;
+    text-shadow:0 4px 0 #fff,0 10px 20px rgba(255,105,180,.3);
+  }
   .tiny{ font-size:22px; opacity:.7 }
   input[type="text"]{
-    width:100%; font: inherit; font-size:28px; padding:10px 14px; border-radius:14px; border:2px solid var(--line);
-    background:#fff; color:var(--ink);
+    width:100%;
+    font:inherit;
+    font-size:28px;
+    padding:10px 14px;
+    border-radius:14px;
+    border:2px solid var(--line);
+    background:#fff;
+    color:var(--ink);
   }
   .qbox{ display:grid; gap:10px; margin-top:8px; text-align:left }
   .q{ font-size:30px; color:var(--ink) }
   .theend{ font-size:28px; color:var(--muted); margin-top:8px }
+
+  /* 🌸 반응형 */
+  @media (max-width:768px){
+    .board{
+      inset:56px 10px 124px 10px;
+      grid-template-columns:1fr;
+      grid-template-rows:1fr 1fr;
+      gap:10px;
+    }
+    .avatarWrap img{ width:75%; max-width:440px; }
+    .textbox{ padding:10px }
+    .card{ padding:12px 14px; border-radius:16px }
+    .controls{ bottom:6px; gap:6px }
+    .top{ padding:8px }
+    .pill{ padding:6px 10px; border-radius:12px }
+    .sheet{ width:min(94%,560px); padding:18px 20px }
+    h1.title{ font-size:clamp(28px,8vw,44px) }
+    .tiny{ font-size:clamp(14px,3.8vw,18px) }
+  }
+
+  @media (max-width:360px){
+    .board{ inset:52px 8px 112px 8px }
+    .bubble{ bottom:30% }
+  }
 </style>
 </head>
 <body>
