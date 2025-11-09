@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&family=Jua&display=swap" rel="stylesheet">
+
 <style>
   :root{
     --bg1:#fff0f6; --bg2:#ffe1ef; --ink:#433646; --muted:#6f5f6b;
@@ -194,7 +195,7 @@
 </style>
 </head>
 <body>
-<div class="frame" role="application" aria-label="나는 우예원">
+<div class="frame" role="application" aria-label="나는 우예원 — 스토리 게임">
   <!-- 상단 상태바 -->
   <div class="top">
     <div class="pill">장면 <span id="sceneIdx">1</span> / <span id="sceneTot">—</span></div>
@@ -206,7 +207,7 @@
   <div class="board">
     <div class="stage avatarWrap">
       <!-- 나중에 실제 이미지 경로로 교체 -->
-      <img id="avatar" alt="여자아이 이미지 자리" src="2A6CCF3B-C7DE-4945-B4B3-7D1F2C1F681B.png"/>
+      <img id="avatar" alt="여자아이 이미지 자리" src="E7B417B0-9BB9-43E0-8C64-2B00CA278958.png"/>
       <div class="bubble" id="bubble"></div>
     </div>
     <div class="stage">
@@ -226,7 +227,7 @@
   <div class="overlay" id="title">
     <div class="sheet">
       <h1 class="title">나는 우예원</h1>
-      <p class="tiny">반짝반짝 ✨</p>
+      <p class="tiny">반짝반짝 예원이의 이야기✨</p>
       <div style="display:flex; gap:10px; justify-content:center; margin-top:6px">
         <button id="startBtn">시작하기</button>
       </div>
@@ -248,6 +249,18 @@
     </div>
   </div>
 
+  <!-- 자기소개(엔딩 직전) -->
+  <div class="overlay" id="selfIntro" style="display:none">
+    <div class="sheet">
+      <h1 class="title" style="font-size:48px">나는 우예원</h1>
+      <p id="selfBody" class="theend" style="text-align:left; line-height:1.75"></p>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:10px">
+        <button id="toEnding" disabled>엔딩 보기</button>
+      </div>
+      <p class="tiny" id="waitHint" style="margin-top:6px; opacity:.7">잠시만요… 준비 중이에요 ✨</p>
+    </div>
+  </div>
+
   <!-- 엔딩 -->
   <div class="overlay" id="ending" style="display:none">
     <div class="sheet">
@@ -261,7 +274,11 @@
 </div>
 
 <script>
-/* ===================== 상태 & UI 레퍼런스 ===================== */
+/* ========= 설정 ========= */
+// 자동 멘트 속도(밀리초). 예: 2000ms = 2초
+const AUTO_DELAY = 2000;
+
+/* ========= 상태 & UI ========= */
 const UI = {
   who: document.getElementById('who'),
   text: document.getElementById('text'),
@@ -279,18 +296,22 @@ const UI = {
   ending: document.getElementById('ending'),
   replay: document.getElementById('replay'),
   resetBtn: document.getElementById('resetBtn'),
+  selfIntro: document.getElementById('selfIntro'),
+  selfBody: document.getElementById('selfBody'),
+  toEnding: document.getElementById('toEnding'),
+  waitHint: document.getElementById('waitHint'),
 };
 const S = {
-  mode: '타이틀', idx: 0, total: 0,
+  mode: '타이틀', idx: 0,
   answers: { color:'', hobby:'', skill:'', food:'', song:'' },
 };
 
-/* ===================== 스토리 정의 (네 서술 그대로) ===================== */
+/* ========= 스토리 데이터 ========= */
 const phases = [
-  // 0: 타이틀 이후 — 프롤로그
+  // 0: 프롤로그
   { who:'나레이션', text:'나는 우예원이다.', btn:'계속', on:'intro' },
 
-  // 1~5: 버튼으로 진행되는 대화
+  // 버튼으로 진행되는 구간
   { who:'우예원', text:'안녕하세요 저는 우예원이에요.', btn:'우예원과 대화하기' },
   { who:'나레이션', text:'나는 우예원이다.', btn:'우예원과 대화하기' },
   { who:'우예원', text:'안녕하새요 저는 우얘원이애요.', btn:'우예원과 대화하기' },
@@ -302,9 +323,9 @@ const phases = [
   { who:'우예원', text:'안녕하새요 저는 우얘원이애요. 실키보이즈 노래 참 조아여~~', btn:'우예원과 대화하기' },
   { who:'나레이션', text:'나는 우예원이다.', btn:'다음' },
 
-  // 6: 자동으로 쏟아지는 독백들(버튼 없이 자동 진행)
+  // 자동으로 쭉 나오는 멘트(느리게)
   { who:'우예원', text:'안녕하새요 저는 우얘원 무병장수를 찬양하지 앰비티아이?그럿개가지자새히는 기억안나요', auto:true },
-  { who:'우예원', text:'안녕하새요 저는 우얘원입니다 아침시간업으면 안먹고 시간잇으면 방 내^^ 안녕하새요', auto:true },
+  { who:'우예원', text:'안녕하새요 저는 우예원입니다 아침시간업으면 안먹고 시간잇으면 방 내^^ 안녕하새요', auto:true },
   { who:'우예원', text:'안녕하새요 저는 우예원입니다 하이루 yewon795 안녕하새요 안녕', auto:true },
   { who:'우예원', text:'안녕하새요 저는 우예원입니다 애스크프사 귀엽잔아', auto:true },
   { who:'우예원', text:'허걱스 내? 내? 안녕하새요 내? 내? 내?', auto:true },
@@ -312,16 +333,14 @@ const phases = [
   { who:'나레이션', text:'나는.. 우예원이다.. 나는..', auto:true },
   { who:'나레이션', text:'우예원이 누구지?', auto:true, on:'whois' },
 
-  // 7: ???과 대화하기
+  // ??? 단계
   { who:'???', text:'나는… 나는…', btn:'???과 대화하기' },
   { who:'???', text:'나는 우예원이야!!!!!!!!', btn:'계속', on:'qa' },
-
-  // 8: 질문들(오버레이 입력 단계로 이동)
 ];
 
 UI.sceneTot.textContent = phases.length;
 
-/* ===================== 유틸 ===================== */
+/* ========= 유틸 ========= */
 function setMode(m){ S.mode=m; UI.mode.textContent=m; }
 function showBubble(text){
   UI.bubble.style.display='block';
@@ -329,7 +348,6 @@ function showBubble(text){
   setTimeout(()=>UI.bubble.style.display='none', 2000);
 }
 function typeIn(el, html){
-  // 간단 타이핑 (완료 시 최종 HTML 넣기)
   const tmp=document.createElement('div'); tmp.innerHTML=html;
   const text = tmp.textContent||tmp.innerText||'';
   el.innerHTML='';
@@ -339,7 +357,7 @@ function typeIn(el, html){
   }, 14);
 }
 
-/* ===================== 렌더 ===================== */
+/* ========= 렌더 ========= */
 function render(i){
   S.idx = Math.max(0, Math.min(phases.length-1, i));
   const node = phases[S.idx];
@@ -347,44 +365,35 @@ function render(i){
 
   UI.who.textContent = node.who || '—';
   typeIn(UI.text, node.text || '');
-
-  // 버튼 레이블
   UI.mainBtn.textContent = node.btn || '다음';
 
-  // 자동 진행
   if(node.auto){
     UI.mainBtn.disabled = true;
     setTimeout(()=>{
       UI.mainBtn.disabled = false;
       if(node.on){ nextPhase(node.on); }
       else if(S.idx < phases.length-1){ render(S.idx+1); }
-    }, 900); // 자동 템포
+    }, AUTO_DELAY); // ✅ 2초 간격
   }else{
     UI.mainBtn.disabled = false;
   }
-
-  // 특수 이벤트
-  if(node.on){
-    // on은 다음 단계 전환 트리거만 담당, 렌더는 현재 장면 표시
-  }
 }
 
-/* ===================== 단계 전환 로직 ===================== */
+/* ========= 단계 전환 ========= */
 function nextPhase(tag){
   if(tag==='intro'){ setMode('스토리'); render(S.idx+1); return; }
   if(tag==='whois'){ setMode('정체성'); UI.mainBtn.textContent='???과 대화하기'; render(S.idx+1); return; }
   if(tag==='qa'){ setMode('질문'); startQA(); return; }
 }
 
-/* ===================== 질문 플로우 ===================== */
+/* ========= 질문 플로우 ========= */
 const qList = [
   { key:'color', q:'네가 좋아하는 색은 뭐야?' },
   { key:'hobby', q:'네 취미는 무엇이야?' },
   { key:'skill', q:'특기는? 무엇을 잘 하니?' },
   { key:'food', q:'가장 좋아하는 음식은?' },
   { key:'song', q:'좋아하는 노래는?' },
-  // 마지막 강제 질문: 버튼 '응'만
-  { key:'confirm', q:'너는 우예원이지.' }
+  { key:'confirm', q:'너는 우예원이지.' } // '응'만
 ];
 let qi = 0;
 
@@ -399,7 +408,6 @@ function ask(){
   const wrap = document.getElementById('answerWrap');
   wrap.innerHTML = '';
   if(item.key==='confirm'){
-    // 입력 불가, '응' 버튼만
     UI.okBtn.textContent = '응';
     const p = document.createElement('p');
     p.className='tiny'; p.textContent='(이 질문은 대답이 하나뿐이야)';
@@ -418,58 +426,76 @@ UI.okBtn.onclick = ()=>{
   if(item.key!=='confirm'){
     const value = (document.getElementById('answer')?.value || '').trim();
     if(!value){ showBubble('살짝만 써줘 ✨'); return; }
-    S.answers[item.key] = value;
+    // 저장
+    if(item.key==='color') S.answers.color = value;
+    if(item.key==='hobby') S.answers.hobby = value;
+    if(item.key==='skill') S.answers.skill = value;
+    if(item.key==='food')  S.answers.food  = value;
+    if(item.key==='song')  S.answers.song  = value;
   }
   qi++;
   if(qi < qList.length){ ask(); }
   else{
     UI.question.style.display='none';
-    summaryScene();
+    summaryScene(); // ✅ 엔딩 전 자기소개 화면으로 이동
   }
 };
 
-/* ===================== 요약 & 엔딩 ===================== */
+/* ========= 엔딩 직전: 자기소개 화면 ========= */
 function summaryScene(){
-  setMode('엔딩');
-  // 말풍선에 자기선언
-  const t = `반가워! 나는 우예원이야.
+  setMode('자기소개');
+
+  const introText = `반가워! 나는 우예원이야.
 내가 좋아하는 색은 ${S.answers.color}.
 내 취미는 ${S.answers.hobby}.
 특기는 ${S.answers.skill}.
 가장 좋아하는 음식은 ${S.answers.food}.
 가장 좋아하는 노래는 ${S.answers.song}.
 나는 우예원이야. 잘 부탁해!`;
-  UI.who.textContent = '우예원';
-  typeIn(UI.text, t.replace(/\n/g,'<br/>'));
-  showBubble('나는 우예원이야! 💖');
 
-  // 잠깐 감상 후 엔딩 화면
-  setTimeout(()=>{ UI.ending.style.display='grid'; }, 1800);
+  // 본문에도 출력(원래 화면)
+  UI.who.textContent = '우예원';
+  typeIn(UI.text, introText.replace(/\n/g,'<br/>'));
+
+  // 🔸 별도의 오버레이에서 길게 보여주기
+  const INTRO_MIN_MS = 3000; // 최소 3초 후 '엔딩 보기' 활성화
+  UI.selfBody.innerHTML = introText.replace(/\n/g,'<br/>');
+  UI.selfIntro.style.display = 'grid';
+  UI.toEnding.disabled = true;
+  UI.waitHint.style.display = 'block';
+
+  setTimeout(()=>{
+    UI.toEnding.disabled = false;
+    UI.waitHint.style.display = 'none';
+  }, INTRO_MIN_MS);
+
+  UI.toEnding.onclick = ()=>{
+    UI.selfIntro.style.display = 'none';
+    UI.ending.style.display = 'grid';
+  };
 }
 
-/* ===================== 이벤트 바인딩 ===================== */
+/* ========= 이벤트 ========= */
 UI.startBtn.onclick = ()=>{
   UI.title.style.display='none';
   setMode('스토리');
   UI.mainBtn.textContent='계속';
   render(0);
 };
-
 UI.mainBtn.onclick = ()=>{
   const node = phases[S.idx];
   if(node.on){ nextPhase(node.on); return; }
   if(S.idx < phases.length-1){ render(S.idx+1); }
 };
-
 UI.replay.onclick = ()=>{ location.reload(); };
 UI.resetBtn.onclick = ()=>{ location.reload(); };
 
-/* 초기 상태 */
+/* 초기화 */
 setMode('타이틀');
-UI.mainBtn.textContent = '시작하기';
+UI.sceneTot.textContent = phases.length;
 UI.who.textContent = '—';
 UI.text.textContent = '타이틀에서 시작하기를 눌러줘!';
-render(0); // 씬 총계 반영만
+render(0); // 카운트 표시용
 </script>
 </body>
 </html>
