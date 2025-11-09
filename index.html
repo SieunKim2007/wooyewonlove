@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>나는 우예원</title>
+<meta name="description" content="스토리 게임 — 우예원이 ‘다연’이 아닌 자기 자신을 사랑하며 ‘우예원’으로 서는 이야기">
+<!-- 귀여운 글씨체 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&family=Jua&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#fff0f6; --bg2:#ffe1ef; --ink:#433646; --muted:#6f5f6b;
+    --line:#ffd1ea; --accent:#ff6bb8; --accent2:#ff8fc8; --card:#fff;
+    --shadow: 0 18px 40px rgba(255,105,180,.28);
+  }
+  html,body{height:100%;margin:0}
+  body{
+    background:
+      radial-gradient(1200px 700px at 75% -10%, #ffd6e7, transparent),
+      linear-gradient(180deg,var(--bg1),var(--bg2));
+    font-family: 'Dongle', 'Jua', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo","Noto Sans KR", sans-serif;
+    color:var(--ink); display:grid; place-items:center;
+  }
+  .frame{
+    width:min(96vw,980px); aspect-ratio:16/9; background:#fff;
+    border:6px solid #ffb3d9; border-radius:24px; overflow:hidden;
+    box-shadow: var(--shadow); position:relative;
+  }
+  .top{
+    position:absolute; inset:0 0 auto 0; padding:10px; display:flex; gap:8px; align-items:center;
+    background:linear-gradient(180deg,#fff8,#fff0);
+  }
+  .pill{
+    background:linear-gradient(#fff,#fff7fb); border:2px solid var(--line); border-radius:14px;
+    padding:6px 12px; display:flex; align-items:center; gap:8px; font-weight:700; color:var(--ink);
+    box-shadow:0 8px 18px rgba(255,105,180,.22);
+  }
+  .board{
+    position:absolute; inset:56px 16px 140px 16px; display:grid; grid-template-columns: 1fr 1fr; gap:12px;
+  }
+  .stage{
+    border:2px solid var(--line); border-radius:16px; background:linear-gradient(#fff,#fff7fb);
+    padding:14px; box-shadow:0 10px 28px rgba(255,105,180,.18); position:relative; overflow:hidden;
+  }
+  .avatarWrap{ display:grid; place-items:center; background:
+      radial-gradient(900px 500px at 15% -15%, #ffe9f3, transparent),
+      radial-gradient(900px 500px at 90% 10%, #ffe2f0, transparent),
+      #fff; border-radius:14px; height:100%;
+  }
+  .avatarWrap img{
+    width:min(80%,360px); max-height:100%; object-fit:contain; filter: drop-shadow(0 16px 28px rgba(255,105,180,.28));
+    border-radius:16px;
+  }
+  .bubble{
+    position:absolute; left:20px; right:20px; bottom:160px; display:none;
+    background:#fff; border:2px solid var(--line); border-radius:18px;
+    padding:12px 14px; box-shadow:0 10px 28px rgba(255,105,180,.22);
+    font-size:28px; line-height:1.45; color:var(--muted);
+  }
+
+  .textbox{
+    position:absolute; left:0; right:0; bottom:0; padding:16px;
+  }
+  .card{
+    background:linear-gradient(#fff,#fff7fb); border:2px solid var(--line); border-radius:18px;
+    padding:16px 18px; max-width: 96%; margin:0 auto 8px; box-shadow:0 14px 34px rgba(255,105,180,.22);
+  }
+  .who{ font-family:'Jua', sans-serif; font-size:30px; color:var(--accent); margin-bottom:4px; letter-spacing: .5px; }
+  .txt{ font-size:30px; line-height:1.5; color:var(--muted); min-height:80px }
+
+  .controls{
+    position:absolute; left:0; right:0; bottom:8px; display:flex; justify-content:center; gap:8px;
+  }
+  button{
+    border:none; cursor:pointer; border-radius:14px; padding:10px 16px;
+    background:linear-gradient(180deg,var(--accent2),var(--accent)); color:#fff; font-weight:900; font-size:24px;
+    box-shadow:0 10px 22px rgba(255,105,180,.3);
+  }
+  .ghost{ background:linear-gradient(#fff,#fff7fb); color:var(--ink); border:2px solid var(--line) }
+
+  /* 오버레이 */
+  .overlay{ position:absolute; inset:0; display:grid; place-items:center; background:linear-gradient(#fff8,#fff0); z-index:10; }
+  .sheet{
+    background:linear-gradient(#fff,#fff7fb); border:2px solid var(--line); border-radius:20px; padding:22px 26px; width:min(92%,700px);
+    text-align:center; box-shadow:0 16px 40px rgba(255,105,180,.28);
+  }
+  h1.title{ font-family:'Jua', sans-serif; font-size:64px; margin:8px 0 4px; color:#ff5cab; letter-spacing:.8px; text-shadow:0 4px 0 #fff, 0 10px 20px rgba(255,105,180,.3) }
+  .tiny{ font-size:22px; opacity:.7 }
+  input[type="text"]{
+    width:100%; font: inherit; font-size:28px; padding:10px 14px; border-radius:14px; border:2px solid var(--line);
+    background:#fff; color:var(--ink);
+  }
+  .qbox{ display:grid; gap:10px; margin-top:8px; text-align:left }
+  .q{ font-size:30px; color:var(--ink) }
+  .theend{ font-size:28px; color:var(--muted); margin-top:8px }
+</style>
+</head>
+<body>
+<div class="frame" role="application" aria-label="나는 우예원 — 스토리 게임">
+  <!-- 상단 상태바 -->
+  <div class="top">
+    <div class="pill">장면 <span id="sceneIdx">1</span> / <span id="sceneTot">—</span></div>
+    <div class="pill">모드 <span id="mode">타이틀</span></div>
+    <div style="margin-left:auto" class="pill ghost" id="resetBtn">처음으로</div>
+  </div>
+
+  <!-- 본문 영역 -->
+  <div class="board">
+    <div class="stage avatarWrap">
+      <!-- 나중에 실제 이미지 경로로 교체 -->
+      <img id="avatar" alt="여자아이 이미지 자리" src="assets/yewon.png"/>
+      <div class="bubble" id="bubble"></div>
+    </div>
+    <div class="stage">
+      <div class="textbox">
+        <div class="card">
+          <div class="who" id="who">나레이션</div>
+          <div class="txt" id="text">—</div>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="mainBtn">시작하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 타이틀 -->
+  <div class="overlay" id="title">
+    <div class="sheet">
+      <h1 class="title">나는 우예원</h1>
+      <p class="tiny">반짝반짝 핑크 아기자기 ✨ (아바타스타 슈 무드)</p>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:6px">
+        <button id="startBtn">시작하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 질문 패널 -->
+  <div class="overlay" id="question" style="display:none">
+    <div class="sheet">
+      <div class="qbox">
+        <div class="q" id="qText">질문</div>
+        <div id="answerWrap">
+          <input type="text" id="answer" placeholder="여기에 입력"/>
+        </div>
+        <div style="display:flex; gap:10px; justify-content:center">
+          <button id="okBtn">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 엔딩 -->
+  <div class="overlay" id="ending" style="display:none">
+    <div class="sheet">
+      <h1 class="title" style="font-size:48px">THE END</h1>
+      <p class="theend">“나는 나 자신일 때 가장 아름답고 가장 빛난다. 우예원은 어디서든 빛나는 존재니까.”</p>
+      <div style="display:flex; gap:10px; justify-content:center; margin-top:10px">
+        <button id="replay">다시 보기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== 상태 & UI 레퍼런스 ===================== */
+const UI = {
+  who: document.getElementById('who'),
+  text: document.getElementById('text'),
+  mainBtn: document.getElementById('mainBtn'),
+  title: document.getElementById('title'),
+  startBtn: document.getElementById('startBtn'),
+  question: document.getElementById('question'),
+  qText: document.getElementById('qText'),
+  answer: document.getElementById('answer'),
+  okBtn: document.getElementById('okBtn'),
+  sceneIdx: document.getElementById('sceneIdx'),
+  sceneTot: document.getElementById('sceneTot'),
+  mode: document.getElementById('mode'),
+  bubble: document.getElementById('bubble'),
+  ending: document.getElementById('ending'),
+  replay: document.getElementById('replay'),
+  resetBtn: document.getElementById('resetBtn'),
+};
+const S = {
+  mode: '타이틀', idx: 0, total: 0,
+  answers: { color:'', hobby:'', skill:'', food:'', song:'' },
+};
+
+/* ===================== 스토리 정의 (네 서술 그대로) ===================== */
+const phases = [
+  // 0: 타이틀 이후 — 프롤로그
+  { who:'나레이션', text:'나는 우예원이다.', btn:'계속', on:'intro' },
+
+  // 1~5: 버튼으로 진행되는 대화
+  { who:'우예원', text:'안녕하세요 저는 우예원이에요.', btn:'우예원과 대화하기' },
+  { who:'나레이션', text:'나는 우예원이다.', btn:'우예원과 대화하기' },
+  { who:'우예원', text:'안녕하새요 저는 우얘원이애요.', btn:'우예원과 대화하기' },
+  { who:'나레이션', text:'나는 우예원이다.', btn:'우예원과 대화하기' },
+  { who:'우예원', text:'안녕하새요 저는 우얘원이애요. 최애라면은 진순.', btn:'우예원과 대화하기' },
+  { who:'나레이션', text:'나는 우예원이다.', btn:'우예원과 대화하기' },
+  { who:'우예원', text:'안녕하새요 저는 우얘원이애요. 가식적인 사람을 실어해요.', btn:'우예원과 대화하기' },
+  { who:'나레이션', text:'나는 우예원이다.', btn:'우예원과 대화하기' },
+  { who:'우예원', text:'안녕하새요 저는 우얘원이애요. 실키보이즈 노래 참 조아여~~', btn:'우예원과 대화하기' },
+  { who:'나레이션', text:'나는 우예원이다.', btn:'다음' },
+
+  // 6: 자동으로 쏟아지는 독백들(버튼 없이 자동 진행)
+  { who:'우예원', text:'안녕하새요 저는 우얘원 무병장수를 찬양하지 앰비티아이?그럿개가지자새히는 기억안나요', auto:true },
+  { who:'우예원', text:'안녕하새요 저는 우얘원입니다 아침시간업으면 안먹고 시간잇으면 방 내^^ 안녕하새요', auto:true },
+  { who:'우예원', text:'안녕하새요 저는 우예원입니다 하이루 yewon795 안녕하새요 안녕', auto:true },
+  { who:'우예원', text:'안녕하새요 저는 우예원입니다 애스크프사 귀엽잔아', auto:true },
+  { who:'우예원', text:'허걱스 내? 내? 안녕하새요 내? 내? 내?', auto:true },
+  { who:'우예원', text:'저는 우얘원 안녕하새요 허걱스 내? 내^^ 내? 저는 우얘원 내? 우얘원.. 저는..', auto:true },
+  { who:'나레이션', text:'나는.. 우예원이다.. 나는..', auto:true },
+  { who:'나레이션', text:'우예원이 누구지?', auto:true, on:'whois' },
+
+  // 7: ???과 대화하기
+  { who:'???', text:'나는… 나는…', btn:'???과 대화하기' },
+  { who:'???', text:'나는 우예원이야!!!!!!!!', btn:'계속', on:'qa' },
+
+  // 8: 질문들(오버레이 입력 단계로 이동)
+];
+
+UI.sceneTot.textContent = phases.length;
+
+/* ===================== 유틸 ===================== */
+function setMode(m){ S.mode=m; UI.mode.textContent=m; }
+function showBubble(text){
+  UI.bubble.style.display='block';
+  UI.bubble.textContent=text;
+  setTimeout(()=>UI.bubble.style.display='none', 2000);
+}
+function typeIn(el, html){
+  // 간단 타이핑 (완료 시 최종 HTML 넣기)
+  const tmp=document.createElement('div'); tmp.innerHTML=html;
+  const text = tmp.textContent||tmp.innerText||'';
+  el.innerHTML='';
+  let i=0; const timer=setInterval(()=>{
+    el.textContent += text[i++]||'';
+    if(i>=text.length){ clearInterval(timer); el.innerHTML=html; }
+  }, 14);
+}
+
+/* ===================== 렌더 ===================== */
+function render(i){
+  S.idx = Math.max(0, Math.min(phases.length-1, i));
+  const node = phases[S.idx];
+  UI.sceneIdx.textContent = S.idx+1;
+
+  UI.who.textContent = node.who || '—';
+  typeIn(UI.text, node.text || '');
+
+  // 버튼 레이블
+  UI.mainBtn.textContent = node.btn || '다음';
+
+  // 자동 진행
+  if(node.auto){
+    UI.mainBtn.disabled = true;
+    setTimeout(()=>{
+      UI.mainBtn.disabled = false;
+      if(node.on){ nextPhase(node.on); }
+      else if(S.idx < phases.length-1){ render(S.idx+1); }
+    }, 900); // 자동 템포
+  }else{
+    UI.mainBtn.disabled = false;
+  }
+
+  // 특수 이벤트
+  if(node.on){
+    // on은 다음 단계 전환 트리거만 담당, 렌더는 현재 장면 표시
+  }
+}
+
+/* ===================== 단계 전환 로직 ===================== */
+function nextPhase(tag){
+  if(tag==='intro'){ setMode('스토리'); render(S.idx+1); return; }
+  if(tag==='whois'){ setMode('정체성'); UI.mainBtn.textContent='???과 대화하기'; render(S.idx+1); return; }
+  if(tag==='qa'){ setMode('질문'); startQA(); return; }
+}
+
+/* ===================== 질문 플로우 ===================== */
+const qList = [
+  { key:'color', q:'네가 좋아하는 색은 뭐야?' },
+  { key:'hobby', q:'네 취미는 무엇이야?' },
+  { key:'skill', q:'특기는? 무엇을 잘 하니?' },
+  { key:'food', q:'가장 좋아하는 음식은?' },
+  { key:'song', q:'좋아하는 노래는?' },
+  // 마지막 강제 질문: 버튼 '응'만
+  { key:'confirm', q:'너는 우예원이지.' }
+];
+let qi = 0;
+
+function startQA(){
+  qi = 0;
+  UI.question.style.display='grid';
+  ask();
+}
+function ask(){
+  const item = qList[qi];
+  UI.qText.textContent = item.q;
+  const wrap = document.getElementById('answerWrap');
+  wrap.innerHTML = '';
+  if(item.key==='confirm'){
+    // 입력 불가, '응' 버튼만
+    UI.okBtn.textContent = '응';
+    const p = document.createElement('p');
+    p.className='tiny'; p.textContent='(이 질문은 대답이 하나뿐이야)';
+    wrap.appendChild(p);
+  }else{
+    const input = document.createElement('input');
+    input.type='text'; input.id='answer'; input.placeholder='여기에 입력';
+    input.autofocus=true; wrap.appendChild(input);
+    UI.okBtn.textContent = '확인';
+    setTimeout(()=>{ input.focus(); }, 50);
+  }
+}
+
+UI.okBtn.onclick = ()=>{
+  const item = qList[qi];
+  if(item.key!=='confirm'){
+    const value = (document.getElementById('answer')?.value || '').trim();
+    if(!value){ showBubble('살짝만 써줘 ✨'); return; }
+    S.answers[item.key] = value;
+  }
+  qi++;
+  if(qi < qList.length){ ask(); }
+  else{
+    UI.question.style.display='none';
+    summaryScene();
+  }
+};
+
+/* ===================== 요약 & 엔딩 ===================== */
+function summaryScene(){
+  setMode('엔딩');
+  // 말풍선에 자기선언
+  const t = `반가워! 나는 우예원이야.
+내가 좋아하는 색은 ${S.answers.color}.
+내 취미는 ${S.answers.hobby}.
+특기는 ${S.answers.skill}.
+가장 좋아하는 음식은 ${S.answers.food}.
+가장 좋아하는 노래는 ${S.answers.song}.
+나는 우예원이야. 잘 부탁해!`;
+  UI.who.textContent = '우예원';
+  typeIn(UI.text, t.replace(/\n/g,'<br/>'));
+  showBubble('나는 우예원이야! 💖');
+
+  // 잠깐 감상 후 엔딩 화면
+  setTimeout(()=>{ UI.ending.style.display='grid'; }, 1800);
+}
+
+/* ===================== 이벤트 바인딩 ===================== */
+UI.startBtn.onclick = ()=>{
+  UI.title.style.display='none';
+  setMode('스토리');
+  UI.mainBtn.textContent='계속';
+  render(0);
+};
+
+UI.mainBtn.onclick = ()=>{
+  const node = phases[S.idx];
+  if(node.on){ nextPhase(node.on); return; }
+  if(S.idx < phases.length-1){ render(S.idx+1); }
+};
+
+UI.replay.onclick = ()=>{ location.reload(); };
+UI.resetBtn.onclick = ()=>{ location.reload(); };
+
+/* 초기 상태 */
+setMode('타이틀');
+UI.mainBtn.textContent = '시작하기';
+UI.who.textContent = '—';
+UI.text.textContent = '타이틀에서 시작하기를 눌러줘!';
+render(0); // 씬 총계 반영만
+</script>
+</body>
+</html>
